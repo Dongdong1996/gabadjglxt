@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.Mk3Dao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.Mk3Entity" id="mk3Map">
+        <result property="id" column="Id"/>
+        <result property="部门" column="部门"/>
+        <result property="姓名" column="姓名"/>
+        <result property="岗位" column="岗位"/>
+        <result property="填写日期" column="填写日期"/>
+        <result property="来电登记" column="来电登记"/>
+        <result property="来访等级" column="来访等级"/>
+        <result property="外勤任务记录" column="外勤任务记录"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.Mk3Entity">
+		select * from mk3 where Id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.Mk3Entity">
+		select * from mk3
+		<where>
+			<if test="姓名 != null and 姓名.trim() != ''">
+				and `姓名` like concat('%',#{姓名},'%') 
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by Id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from mk3 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.Mk3Entity" useGeneratedKeys="true" keyProperty="id">
+		insert into mk3
+		(
+			`部门`, 
+			`姓名`, 
+			`岗位`, 
+			`填写日期`, 
+			`来电登记`, 
+			`来访等级`, 
+			`外勤任务记录`
+		)
+		values
+		(
+			#{部门}, 
+			#{姓名}, 
+			#{岗位}, 
+			#{填写日期}, 
+			#{来电登记}, 
+			#{来访等级}, 
+			#{外勤任务记录}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.Mk3Entity">
+		update mk3 
+		<set>
+			<if test="部门 != null">`部门` = #{部门}, </if>
+			<if test="姓名 != null">`姓名` = #{姓名}, </if>
+			<if test="岗位 != null">`岗位` = #{岗位}, </if>
+			<if test="填写日期 != null">`填写日期` = #{填写日期}, </if>
+			<if test="来电登记 != null">`来电登记` = #{来电登记}, </if>
+			<if test="来访等级 != null">`来访等级` = #{来访等级}, </if>
+			<if test="外勤任务记录 != null">`外勤任务记录` = #{外勤任务记录}</if>
+		</set>
+		where Id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from mk3 where Id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from mk3 where Id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

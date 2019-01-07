@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>控制台</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/plugins/layui/css/layui.css">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<style>
+.main_link{
+	width:100%;
+	text-align:center;
+	position:absolute;
+	top:50%;
+	margin-top:-60px;
+} 
+.main_link a{
+	display:inline-block;
+	color:#333333;
+	font-size:16px;
+	margin-left:30px;
+	text-decoration:none;
+	position:relative;
+	padding:5px;
+	
+}
+.main_link a:first-child{
+margin:0;
+}
+.main_link a:hover{
+font-size:18px;
+}
+.main_link a span.tip{
+position:absolute;
+display:block;
+width:20px;
+height:20px;
+border-radius:20px;
+background:#f00;
+color:#fff;
+font-size:12px;
+right:0;
+top:0;
+}
+</style>
+<body>
+欢迎您，使用无忧水管家系统管理平台!
+<div class="main_link">
+	<a href="workorder.html"><span style="display:none;" class="tip gong"></span><img alt="" src="../public/image/gong.png"><br />工单管理</a>
+	<a href="enterprise.html"><span style="display:none;" class="tip qi"></span><img alt="" src="../public/image/qi.png"><br />企业认证</a>
+	<a href="entuser.html"><span style="display:none;" class="tip zhuan"></span><img alt="" src="../public/image/zhuan.png"><br />专家认证</a>
+</div>
+<script src="../public/js/sys/workorder.js"></script>
+<script type="text/javascript">
+	$(function(){
+		//查询工单数量
+		queryWorkorderForCount();
+		//查询企业未认证数量
+		queryEnterpriseForCount();
+		//查询未认证专家数量
+		queryEntuserForCount();
+	});
+	//查询工单数量
+	function queryWorkorderForCount(){
+		$.ajax({
+			type:"post",
+			url:"../workorder/queryWorkorderForCount",
+			data:null,
+			dataType:"json",
+			success:function(res){
+				if(res.code == 0){
+					$(".gong").html(res.count);
+					$(".gong").removeAttr("style");
+				}
+			}
+		});
+	}
+	//查询企业未认证数量
+	function queryEnterpriseForCount(){
+		$.ajax({
+			type:"post",
+			url:"../enterprise/queryEnterpriseForCount",
+			data:null,
+			dataType:"json",
+			success:function(res){
+				if(res.code == 0){
+					$(".qi").html(res.count);
+					$(".qi").removeAttr("style");
+				}
+			}
+		});
+	}
+	//查询未认证专家数量
+	function queryEntuserForCount(){
+		$.ajax({
+			type:"post",
+			url:"../entuser/queryEntuserForCount",
+			data:null,
+			dataType:"json",
+			success:function(res){
+				if(res.code == 0){
+					$(".zhuan").html(res.count);
+					$(".zhuan").removeAttr("style");
+				}
+			}
+		});
+	}
+</script>
+</body>
+</html>

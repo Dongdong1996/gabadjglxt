@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.ItemsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.ItemsEntity" id="itemsMap">
+        <result property="id" column="id"/>
+        <result property="itemcode" column="itemcode"/>
+        <result property="itemname" column="itemname"/>
+        <result property="itemthreshold" column="itemthreshold"/>
+        <result property="itemunit" column="itemunit"/>
+        <result property="itemsort" column="itemsort"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.ItemsEntity">
+		select * from items where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.ItemsEntity">
+		select * from items
+		<where>
+			<if test="itemname != null and itemname.trim() != ''">
+				and `itemname` like concat('%',#{itemname},'%') 
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from items 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.ItemsEntity">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        	select  replace(uuid(),'-','')   from dual
+    	</selectKey>
+		insert into items
+		(
+			`id`, 
+			`itemcode`, 
+			`itemname`, 
+			`itemthreshold`, 
+			`itemunit`, 
+			`itemsort`
+		)
+		values
+		(
+			#{id}, 
+			#{itemcode}, 
+			#{itemname}, 
+			#{itemthreshold}, 
+			#{itemunit}, 
+			#{itemsort}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.ItemsEntity">
+		update items 
+		<set>
+			<if test="itemcode != null">`itemcode` = #{itemcode}, </if>
+			<if test="itemname != null">`itemname` = #{itemname}, </if>
+			<if test="itemthreshold != null">`itemthreshold` = #{itemthreshold}, </if>
+			<if test="itemunit != null">`itemunit` = #{itemunit}, </if>
+			<if test="itemsort != null">`itemsort` = #{itemsort}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from items where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from items where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

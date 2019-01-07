@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>资料下载</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<link rel="stylesheet" href="../public/plugins/layui/css/layui.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.title" @keyup.enter="query" placeholder="请输入关键词查询">
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			<a v-if="hasPermission('datadownload:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('datadownload:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('datadownload:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">标题</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="datadownload.title" placeholder="标题"/>
+			    </div>
+			</div>
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">类目</div>
+			   	<div class="col-sm-10">
+			      <!-- <input type="text" class="form-control" v-model="datadownload.kcid" placeholder="类目ID"/> -->
+			      <!-- <ul id="leimuTree" class="ztree"></ul> -->
+			      <select class="form-control" v-model="datadownload.kcid" placeholder="类目">
+<!--   					<option value ="4" >资料下载</option> -->
+  					<option value ="7">学术论文</option>
+  					<option value ="8">专业书籍</option>
+				  </select>
+			    </div>
+			</div>
+									
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">创建时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="datadownload.createtime" placeholder="创建时间"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">摘要</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="datadownload.dataprofile" placeholder="摘要"/>
+			    </div>
+			</div> -->
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">内容</div>
+			   	<div class="col-sm-10">
+			     <!-- <input type="text" class="form-control" v-model="datadownload.datadetail" placeholder="内容"/> -->
+			     <!-- <textarea id="datadetail" tyle="display: none" v-model="datadownload.datadetail" ></textarea> -->
+			     <!-- <textarea class="layui-textarea" v-model="datadownload.datadetail" placeholder="请输入内容信息">描述</textarea> -->	 
+				  	<textarea id="TextArea1" name="TextArea1"    v-model="datadownload.datadetail" cols="20" rows="2" class="ckeditor"></textarea>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../public/js/sys/datadownload.js"></script>
+
+<!-- ckeditor.js -->
+<script type="text/javascript" src="../public/plugins/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+	var contextRoot =/*[[@{/}]]*/ '';
+	var editor;
+	$(function(){
+		editor = CKEDITOR.replace("TextArea1");
+	})
+</script>
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<!-- <script src="../public/plugins/layui/layui.js"></script>
+<script>
+	layui.use('layedit', function(){
+	  var layedit = layui.layedit;
+	  layedit.build('datadetail'); //建立编辑器
+	});
+</script> -->
+</body>
+</html>

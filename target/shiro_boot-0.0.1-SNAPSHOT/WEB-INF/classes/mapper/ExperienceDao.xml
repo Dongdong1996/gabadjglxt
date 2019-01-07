@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.ExperienceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.ExperienceEntity" id="experienceMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="profile" column="Profile"/>
+        <result property="description" column="description"/>
+        <result property="createtime" column="createtime"/>
+        <result property="source" column="source"/>
+        <result property="sourcetype" column="sourcetype"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.ExperienceEntity">
+		select * from experience where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.ExperienceEntity">
+		select * from experience
+		<where>
+			<if test="title != null and title.trim() != ''">
+				and `title` like concat('%',#{title},'%') 
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by createtime desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from experience 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.ExperienceEntity">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        	select  replace(uuid(),'-','')   from dual
+    	</selectKey>
+		insert into experience
+		(
+			`id`,
+			`kcid`,
+			`title`, 
+			`Profile`, 
+			`description`, 
+			`createtime`, 
+			`source`, 
+			`sourcetype`
+		)
+		values
+		(
+			#{id},
+			'2',
+			#{title}, 
+			#{profile}, 
+			#{description}, 
+			#{createtime}, 
+			#{source}, 
+			#{sourcetype}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.ExperienceEntity">
+		update experience 
+		<set>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="profile != null">`Profile` = #{profile}, </if>
+			<if test="description != null">`description` = #{description}, </if>
+			<if test="createtime != null">`createtime` = #{createtime}, </if>
+			<if test="source != null">`source` = #{source}, </if>
+			<if test="sourcetype != null">`sourcetype` = #{sourcetype}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from experience where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from experience where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

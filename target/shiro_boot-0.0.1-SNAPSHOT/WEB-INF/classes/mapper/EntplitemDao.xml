@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.EntplitemDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.EntplitemEntity" id="entplitemMap">
+        <result property="id" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="entcode" column="entcode"/>
+        <result property="plcode" column="plcode"/>
+        <result property="nodecode" column="nodecode"/>
+        <result property="itemcode" column="itemcode"/>
+        <result property="itemname" column="itemname"/>
+        <result property="itemunit" column="itemunit"/>
+        <result property="itemmin" column="itemmin"/>
+        <result property="itemmax" column="itemmax"/>
+        <result property="itemvisibled" column="itemvisibled"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.EntplitemEntity">
+		select * from entplitem where id = #{value}
+	</select>
+	<select id="queryitemcode" parameterType="com.cf.entity.EntplitemEntity" resultType="com.cf.entity.EntplitemEntity">
+		select itemcode,itemname,itemunit from entplitem
+		where entcode=#{entcode}
+		and plcode=#{plcode}
+		and nodecode=#{nodecode}
+	</select>
+	<select id="queryList" resultType="com.cf.entity.EntplitemEntity">
+		select * from entplitem
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from entplitem 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.EntplitemEntity">
+		insert into entplitem
+		(
+			`id`, 
+			`uid`, 
+			`entcode`, 
+			`plcode`, 
+			`nodecode`, 
+			`itemcode`, 
+			`itemname`, 
+			`itemunit`, 
+			`itemmin`, 
+			`itemmax`, 
+			`itemvisibled`
+		)
+		values
+		(
+			#{id}, 
+			#{uid}, 
+			#{entcode}, 
+			#{plcode}, 
+			#{nodecode}, 
+			#{itemcode}, 
+			#{itemname}, 
+			#{itemunit}, 
+			#{itemmin}, 
+			#{itemmax}, 
+			#{itemvisibled}
+		)
+	</insert>
+	 <update id="updateitemname" parameterType="com.cf.entity.EntplitemEntity">
+	 	update entplitem
+	 	<set>
+	 		<if test="itemname != null and itemname != ''">
+	 			itemname = #{itemname}
+	 		</if>
+	 	</set>
+	 	where <if test="itemcode != null and itemcode != ''">itemcode = #{itemcode}</if>
+	 </update>
+	<update id="update" parameterType="com.cf.entity.EntplitemEntity">
+		update entplitem 
+		<set>
+			<if test="uid != null">`uid` = #{uid}, </if>
+			<if test="entcode != null">`entcode` = #{entcode}, </if>
+			<if test="plcode != null">`plcode` = #{plcode}, </if>
+			<if test="nodecode != null">`nodecode` = #{nodecode}, </if>
+			<if test="itemcode != null">`itemcode` = #{itemcode}, </if>
+			<if test="itemname != null">`itemname` = #{itemname}, </if>
+			<if test="itemunit != null">`itemunit` = #{itemunit}, </if>
+			<if test="itemmin != null">`itemmin` = #{itemmin}, </if>
+			<if test="itemmax != null">`itemmax` = #{itemmax}, </if>
+			<if test="itemvisibled != null">`itemvisibled` = #{itemvisibled}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from entplitem where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from entplitem where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

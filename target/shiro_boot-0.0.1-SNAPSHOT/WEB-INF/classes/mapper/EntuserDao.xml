@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.EntuserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.EntuserEntity" id="entuserMap">
+        <result property="id" column="id"/>
+        <result property="loginname" column="loginname"/>
+        <result property="loginpassword" column="loginpassword"/>
+        <result property="phone" column="phone"/>
+        <result property="openid" column="openid"/>
+        <result property="ustatus" column="ustatus"/>
+        <result property="utype" column="utype"/>
+        <result property="creattime" column="creattime"/>
+        <result property="updatetime" column="updatetime"/>
+        <result property="realname" column="realname"/>
+        <result property="headimg" column="headimg"/>
+        <result property="grade" column="grade"/>
+        <result property="integral" column="integral"/>
+        <result property="idnumber" column="idnumber"/>
+        <result property="entcode" column="entcode"/>
+        <result property="sex" column="sex"/>
+        <result property="goodat" column="goodat"/>
+        <result property="qualificationsurl" column="qualificationsurl"/>
+        <result property="inpositive" column="inpositive"/>
+        <result property="innegative" column="innegative"/>
+        <result property="address" column="address"/>
+        <result property="duties" column="duties"/>
+        <result property="expertstatus" column="expertstatus"/>
+    </resultMap>
+    <select id="queryUserByUid" parameterType="java.lang.String" resultType="com.cf.entity.EntuserEntity">
+    	select * from entuser where id = #{value}
+    </select>
+<!-- 查询专家未认证数量 -->
+	<select id="queryEntuserForCount" resultType="java.lang.Integer">
+		SELECT COUNT(0) FROM entuser
+		WHERE `expertstatus` = '1'
+	</select>
+	<select id="queryObject" resultType="com.cf.entity.EntuserEntity">
+		select * from entuser where id = #{value}
+	</select>
+	<select id="queryEntuser" resultType="com.cf.entity.EntuserEntity">
+		select * from entuser
+	</select>
+	<select id="queryList" resultType="com.cf.entity.EntuserEntity" parameterType="map">
+		select * from entuser
+		<where>
+			<if test="phone != null and phone.trim() != ''">
+				and `phone`like concat('%',#{phone},'%')
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by creattime desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from entuser 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.EntuserEntity">
+		insert into entuser
+		(
+			`id`, 
+			`loginname`, 
+			`loginpassword`, 
+			`phone`, 
+			`openid`, 
+			`ustatus`, 
+			`utype`, 
+			`creattime`, 
+			`updatetime`, 
+			`realname`, 
+			`headimg`, 
+			`grade`, 
+			`integral`, 
+			`idnumber`, 
+			`entcode`, 
+			`sex`, 
+			`goodat`, 
+			`qualificationsurl`, 
+			`inpositive`, 
+			`innegative`, 
+			`address`, 
+			`duties`
+		)
+		values
+		(
+			#{id}, 
+			#{loginname}, 
+			#{loginpassword}, 
+			#{phone}, 
+			#{openid}, 
+			#{ustatus}, 
+			#{utype}, 
+			#{creattime}, 
+			#{updatetime}, 
+			#{realname}, 
+			#{headimg}, 
+			#{grade}, 
+			#{integral}, 
+			#{idnumber}, 
+			#{entcode}, 
+			#{sex}, 
+			#{goodat}, 
+			#{qualificationsurl}, 
+			#{inpositive}, 
+			#{innegative}, 
+			#{address}, 
+			#{duties}
+		)
+	</insert>
+	 <update id="updateUtype" parameterType="com.cf.entity.EntuserEntity">
+	 	UPDATE entuser
+	 	<set>
+	 		utype = "12"
+	 	</set>
+	 	WHERE entcode = #{entcode}
+	 </update>
+	<update id="update" parameterType="com.cf.entity.EntuserEntity">
+		update entuser 
+		<set>
+			<if test="loginname != null">`loginname` = #{loginname}, </if>
+			<if test="loginpassword != null">`loginpassword` = #{loginpassword}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="ustatus != null">`ustatus` = #{ustatus}, </if>
+			<if test="utype != null">`utype` = #{utype}, </if>
+			<if test="creattime != null">`creattime` = #{creattime}, </if>
+			<if test="updatetime != null">`updatetime` = #{updatetime}, </if>
+			<if test="realname != null">`realname` = #{realname}, </if>
+			<if test="headimg != null">`headimg` = #{headimg}, </if>
+			<if test="grade != null">`grade` = #{grade}, </if>
+			<if test="integral != null">`integral` = #{integral}, </if>
+			<if test="idnumber != null">`idnumber` = #{idnumber}, </if>
+			<if test="entcode != null">`entcode` = #{entcode}, </if>
+			<if test="sex != null">`sex` = #{sex}, </if>
+			<if test="goodat != null">`goodat` = #{goodat}, </if>
+			<if test="qualificationsurl != null">`qualificationsurl` = #{qualificationsurl}, </if>
+			<if test="inpositive != null">`inpositive` = #{inpositive}, </if>
+			<if test="innegative != null">`innegative` = #{innegative}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="duties != null">`duties` = #{duties},</if>
+			<if test="expertstatus != null">`expertstatus` = #{expertstatus}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from entuser where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from entuser where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

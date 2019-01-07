@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<link rel="stylesheet" href="../public/plugins/layui/css/layui.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<a v-if="hasPermission('enterprise:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('enterprise:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('enterprise:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+<!-- 			<a v-if="hasPermission('enterprise:delete')" class="btn btn-primary" @click="enterprisedata"><i class="fa fa-bars"></i>&nbsp;企业数据</a> -->
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+			<div class="form-group" style="display:none;">
+			   	<div class="col-sm-2 control-label">企业代码</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="enterprise.entcode" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">企业名称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="enterprise.entname" placeholder=""/>
+			    </div>
+			</div>
+<!-- 									<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label"></div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			      <input type="text" class="form-control" v-model="enterprise.entareacode" placeholder=""/> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">企业所在地</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="enterprise.entareaname" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">企业管理员</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="enterprise.contacts" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">电话</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="enterprise.phone" placeholder=""/>
+			    </div>
+			</div>
+			
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">所属行业</div>
+			   	<div class="col-sm-10">
+<!-- 			      <input type="text" class="form-control" v-model="enterprise.industry" placeholder=""/> -->
+			    	  <select class="form-control" v-model="enterprise.industry">
+			    	  	<option value="造纸 造纸">造纸 造纸</option>
+			    	  	<option value="皮革 牛皮">皮革 牛皮</option>
+			    	  	<option value="制药 制药">制药 制药</option>
+			    	  	<option value="化工 化工">化工 化工</option>
+			    	  	<option value="石油煤化 石油煤化">石油煤化 石油煤化</option>
+			    	  	<option value="纺织 纺织">纺织 纺织</option>
+			    	  	<option value="冶金 冶金">冶金 冶金</option>
+			    	  	<option value="食品 食品">食品 食品</option>
+			    	  	<option value="饮料酒精 饮料酒精">饮料酒精 饮料酒精</option>
+			    	  	<option value="机械加工 机械加工">机械加工 机械加工</option>
+			    	  	<option value="其他 其他">其他 其他</option>
+			    	  </select>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">企业规模</div>
+			   	<div class="col-sm-10">
+<!-- 			      <input type="text" class="form-control" v-model="enterprise.scale" placeholder=""/> -->
+			   		  <select class="form-control" v-model="enterprise.scale">
+			   		  	<option value="100人以内">100人以内</option>
+			   		  	<option value="100-500人">100-500人</option>
+			   		  	<option value="500-1000人">500-1000人</option>
+			   		  	<option value="1000-5000人">1000-5000人</option>
+			   		  	<option value="5000人以上">5000人以上</option>
+			   		  </select>
+			    </div>
+			</div>
+<!-- 									<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label"></div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			      <input type="text" class="form-control" v-model="enterprise.entsort" placeholder=""/> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">污水设计处理量</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="enterprise.wastewater" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">认证状态</div>
+			   	<div class="col-sm-10">
+<!-- 			      <input type="text" class="form-control" v-model="enterprise.status" placeholder="0  未认证 -->
+<!-- 1  认证中 -->
+<!-- 2  已认证"/> -->
+					 <select class="form-control" v-model="enterprise.status">
+					 	<option value="0">未认证</option>
+					 	<option value="1">认证中</option>
+					 	<option value="2">已认证</option>
+					 </select>
+			    </div>
+			</div>
+<!-- 									<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label"></div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- <!-- 			      <input type="text" class="form-control" v-model="enterprise.licenseurl" placeholder=""/> --> 
+<!-- <!-- 					 <div class="col-sm-2 control-label">文件</div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			       {{enterprise.licenseurl}} -->
+<!-- 			    </div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			   		<button id="chooseFile" type="button" class="layui-btn layui-btn-normal">企业资质</button>  -->
+<!-- 			       <button id="uploadfile" type="button" class="layui-btn">上传文件</button>  -->
+<!-- 			    </div> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">企业资质</div>
+			   	<div class="col-sm-10">
+			   	  <img src="../public/image/template.png" id="image" v-model="enterprise.licenseurl" onclick="file.click();" @dblclick="enlargeIsPic" style="width: 160px;height: 120px;line-height: 60px;background: #eee;margin: 10px 5px 0 0;font-size: 32px;text-align: center;color: #ccc;" />
+			      <input type="file" id="file" style="display:none;" multiple accept="image/*" @change="readAsDataURL"  placeholder=""/>
+<!-- 			   	  <input id="fileList" type="button"  value="选择图片"  onclick="file.click();" style="width: 160px;height: 80px;border:0;background:0;position:absolute;top:44px;left:15px;text-indent:-9999px;" /> -->
+				  <div id="fileNotice" style="display:none;">
+					  <p style="color:red">禁止修改企业资质</p>
+				  </div>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../public/js/sys/enterprise.js"></script>
+<script src="../public/plugins/layui/layui.js"></script>
+<script>
+ 	
+	
+</script>
+</body>
+</html>

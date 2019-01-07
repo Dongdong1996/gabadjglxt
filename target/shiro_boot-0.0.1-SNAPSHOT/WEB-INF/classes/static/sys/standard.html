@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>标准方法</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<link rel="stylesheet" href="../public/plugins/layui/css/layui.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.title" @keyup.enter="query" placeholder="请输入关键词查询">
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			<a v-if="hasPermission('standard:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('standard:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('standard:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">类目</div>
+			   	<div class="col-sm-10 ">
+			       <!-- <input id="kcid" type="text" class="form-control" v-model="standard.kcid" placeholder="请选择类目"/>  -->
+			    		<!-- <ul id="leimuTree" class="ztree"></ul> -->
+			    		<select class="form-control" v-model="standard.kcid" placeholder="类目">
+  							
+  							<option value ="5">大气环境保护</option>
+  							<option value ="6">水环境保护</option>
+  							<option value ="9">固体废物污染控制</option>
+				  		</select>
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">文件</div>
+			   	<div class="col-sm-10">
+			       {{standard.title}}
+			    </div>
+			   	<div class="col-sm-10">
+			   		<button id="chooseFile" type="button" class="layui-btn layui-btn-normal">选择文件</button> 
+			       <!-- <button id="uploadfile" type="button" class="layui-btn">上传文件</button>  -->
+			    </div>
+			</div>
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">文件描述</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="standard.description" placeholder="文件的描述，非必填"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">创建时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="standard.createtime" placeholder="创建时间"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">链接地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="standard.linkurl" placeholder="链接地址"/>
+			    </div>
+			</div> -->
+			<!--
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">来源类型</div>
+			   	<div class="col-sm-10">
+			     	<label class="radio-inline">
+				 		<input type="radio" name="sourcetype" value="1" v-model="standard.sourcetype"/> 知识问答转化
+					</label>
+					<label class="radio-inline">
+				  		<input type="radio" name="sourcetype" value="2" v-model="standard.sourcetype"/> 无忧水管家
+					</label>
+			    </div>
+			</div>-->
+			<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input id="uploadFileAndSaveOrUpdate" type="button" class="btn btn-primary" value="确定"/>&nbsp;&nbsp;
+				<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+<!-- <script type="text/javascript">
+function upload(){
+	alert(123);
+}
+</script> -->
+<script src="../public/js/sys/standard.js"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script src="../public/plugins/layui/layui.js"></script>
+<script>
+layui.use('upload', function(){
+  	var upload = layui.upload;
+  	upload.render({
+		elem: '#chooseFile',//html对应的ID元素
+		url: '../api/upload',//调用文档上传接口
+		accept: 'file', //普通文件
+		size: 51200, //限制文件大小，单位 KB
+		auto: false, //选择文件后不自动上传
+		//multiple: true,
+		bindAction: '#uploadFileAndSaveOrUpdate', //指向一个按钮触发上传
+		done: function(res, index, upload){
+			console.log(res); 
+			if(res.code==0 && res.data && res.data.length>0){
+				//alert(res.msg);
+				$.extend(true, vm.standard, res.data[0]);
+				vm.standard.linkurl=res.data[0].dbUploadPath;//回填写文件上传路径
+				vm.standard.title = res.data[0].fileName;//回填写文件标题
+				vm.saveOrUpdate();
+			}
+		},error: function(index, upload){
+			console.log('上传失败'); 
+		}
+  	});
+}); 
+</script>
+
+</body>
+</html>

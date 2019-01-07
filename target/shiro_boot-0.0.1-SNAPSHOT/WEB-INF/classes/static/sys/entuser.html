@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>用户管理</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.phone" @keyup.enter="query" placeholder="按照手机号模糊查询">
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			<a v-if="hasPermission('entuser:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('entuser:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('entuser:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">昵称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.loginname" placeholder="昵称"/>
+			    </div>
+			</div>
+<!-- 									<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label">密码</div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			      <input type="text" class="form-control" v-model="entuser.loginpassword" placeholder="密码"/> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">手机号码</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.phone" placeholder="手机号码"/>
+			    </div>
+			</div>
+<!-- 			<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label">openid</div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			      <input type="text" class="form-control" v-model="entuser.openid" placeholder=""/> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">用户状态  </div>
+			   	<div class="col-sm-10">
+			      <!-- <input type="text" class="form-control" v-model="entuser.ustatus" placeholder="用户状态  "/> -->
+			      	<label class="radio-inline">
+				  		<input type="radio" name="ustatus" value="1" v-model="entuser.ustatus"/> 正常
+				    </label>
+					<label class="radio-inline">
+				  		<input type="radio" name="ustatus" value="2" v-model="entuser.ustatus"/> 禁用
+					</label>
+			    </div>
+			</div>
+		   <div class="form-group">
+			   	<div class="col-sm-2 control-label">用户类型</div>
+			   	<div class="col-sm-10">
+			      <!-- <input type="text" class="form-control" v-model="entuser.utype" placeholder="用户类型" /> -->
+			      	<label class="radio-inline">
+				  		<input type="radio" name="utype" @click="change1" value="1" v-model="entuser.utype"/> 个人用户
+				    </label>
+					<label class="radio-inline">
+				  		<input type="radio" name="utype" @click="change2" value="5" v-model="entuser.utype"/> 企业用户
+					</label>
+					<label class="radio-inline">
+				  		<input type="radio" name="utype" @click="change3" value="7" v-model="entuser.utype"/> 专家用户
+					</label>
+					<label class="radio-inline">
+				  		<input type="radio" name="utype" @click="change4" value="10" v-model="entuser.utype"/> 特邀专家
+					</label>
+			    </div>
+			</div>
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">创建时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.creattime" placeholder="创建时间"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">更新时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.updatetime" placeholder="更新时间"/>
+			    </div>
+			</div> -->
+									<div class="form-group" id="realname">
+			   	<div class="col-sm-2 control-label">真实姓名</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.realname" placeholder="真实姓名"/>
+			    </div>
+			</div>
+									<div class="form-group" id="headimg">
+			   	<div class="col-sm-2 control-label">头像</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.headimg" placeholder="头像"/>
+			    </div>
+			</div>
+									<div class="form-group" id="grade">
+			   	<div class="col-sm-2 control-label">等级</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.grade" placeholder="等级"/>
+			    </div>
+			</div>
+									<div class="form-group" id="integral">
+			   	<div class="col-sm-2 control-label">积分</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.integral" placeholder="积分"/>
+			    </div>
+			</div>
+									<div class="form-group" id="idnumber">
+			   	<div class="col-sm-2 control-label">身份证号</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.idnumber" placeholder="身份证号"/>
+			    </div>
+			</div>
+<!-- 									<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label">企业代码</div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			      <input type="text" class="form-control" v-model="entuser.entcode" placeholder="企业代码"/> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+									<div class="form-group" id="sex">
+			   	<div class="col-sm-2 control-label">性别</div>
+			   	<div class="col-sm-10">
+			      <!-- <input type="text" class="form-control" v-model="entuser.sex" placeholder="性别"/> -->
+			        <label class="radio-inline">
+				  		<input type="radio" name="sex" value="1" v-model="entuser.sex"/> 男
+				    </label>
+					<label class="radio-inline">
+				  		<input type="radio" name="sex" value="2" v-model="entuser.sex"/> 女
+					</label>
+			    </div>
+			</div>
+									<div class="form-group" id="goodat">
+			   	<div class="col-sm-2 control-label">擅长</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.goodat" placeholder="擅长"/>
+			    </div>
+			</div>
+									<div class="form-group" id="qualificationsurl">
+			   	<div class="col-sm-2 control-label">资质</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.qualificationsurl" placeholder="资质"/>
+			    </div>
+			</div>
+<!-- 									<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label">身份证正面</div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			      <input type="text" class="form-control" v-model="entuser.inpositive" placeholder="身份证正面"/> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+<!-- 									<div class="form-group"> -->
+<!-- 			   	<div class="col-sm-2 control-label">身份证反面</div> -->
+<!-- 			   	<div class="col-sm-10"> -->
+<!-- 			      <input type="text" class="form-control" v-model="entuser.innegative" placeholder="身份证反面"/> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
+									<div class="form-group" id="address">
+			   	<div class="col-sm-2 control-label">地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.address" placeholder="地址"/>
+			    </div>
+			</div>
+									<div class="form-group" id="duties">
+			   	<div class="col-sm-2 control-label">职位</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="entuser.duties" placeholder="职位"/>
+			    </div>
+			</div>
+									<div class="form-group" id="expertstatus">
+			   	<div class="col-sm-2 control-label">认证状态</div>
+			   	<div class="col-sm-10">
+<!-- 			      <input type="text" class="form-control" v-model="entuser.duties" placeholder="职位"/> -->
+				    <select class="form-control" v-model="entuser.expertstatus">
+						 	<option value="0">未认证</option>
+						 	<option value="1">认证中</option>
+						 	<option value="2">已认证</option>
+					</select>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../public/js/sys/entuser.js"></script>
+</body>
+</html>

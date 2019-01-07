@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>预警管理</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<!-- <input type="text" class="form-control" v-model="q.content" @keyup.enter="query" placeholder="请输入关键词查询"> -->
+				<select class="form-control" v-model="q.content" @keyup.enter="query" placeholder="消息类型">
+  					<option value ="1" >预警</option>
+  					<option value ="2">我的问答</option>
+  					<option value ="3">知识中心</option>
+  					<option value ="4">工单问答</option>
+  					<option value ="5">新闻公告</option>
+				</select>
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			<!-- <a v-if="hasPermission('message:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('message:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('message:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a> -->
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">企业代码</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="message.entcode" placeholder="企业代码"/>
+			    </div>
+			</div>
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">创建日期</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="message.createtime" placeholder="创建日期"/>
+			    </div>
+			</div> -->
+			
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">发送内容</div>
+				   	<div class="col-sm-10">
+				      <!-- <input type="text" class="form-control" v-model="message.content" placeholder="发送内容"/> -->
+				      <textarea class="layui-textarea" v-model="message.content" placeholder="请输入发送内容">发送内容</textarea>
+				    </div>
+				</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">消息类型</div>
+			   	<div class="col-sm-10">
+			      <!-- <input type="text" class="form-control" v-model="message.messagetype" placeholder="消息类型"/> -->
+			      <label class="radio-inline">
+				 	<input type="radio" name="messagetype" value="1" v-model="message.messagetype"/> 预警
+				  </label>
+				  <label class="radio-inline">
+				  	<input type="radio" name="messagetype" value="2" v-model="message.messagetype"/> 我的问答
+				  </label>
+				  <label class="radio-inline">
+				  	<input type="radio" name="messagetype" value="3" v-model="message.messagetype"/> 知识中心
+				  </label>
+				  <label class="radio-inline">
+				  	<input type="radio" name="messagetype" value="4" v-model="message.messagetype"/> 工单问答
+				  </label>
+				  <label class="radio-inline">
+				  	<input type="radio" name="messagetype" value="5" v-model="message.messagetype"/> 新闻公告
+				  </label>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">消息状态</div>
+			   	<div class="col-sm-10">
+			      <!-- <input type="text" class="form-control" v-model="message.messagestatus" placeholder="消息状态"/> -->
+			      <label class="radio-inline">
+				 	<input type="radio" name="messagestatus" value="1" v-model="message.messagestatus"/> 未发送
+				  </label>
+				  <label class="radio-inline">
+				  	<input type="radio" name="messagestatus" value="2" v-model="message.messagestatus"/> 已发送
+				  </label>
+			    </div>
+			</div>
+									
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">提问者ID</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="message.quid" placeholder="提问者ID"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">回答者ID</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="message.auid" placeholder="回答者ID"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">相关ID</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="message.experienceid" placeholder="相关ID"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">回答者名字</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="message.aname" placeholder="回答者名字"/>
+			    </div>
+			</div> -->
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../public/js/sys/message.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.AnswerDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.AnswerEntity" id="answerMap">
+        <result property="id" column="id"/>
+        <result property="qid" column="qid"/>
+        <result property="quid" column="quid"/>
+        <result property="auid" column="auid"/>
+        <result property="answer" column="answer"/>
+        <result property="createtime" column="createtime"/>
+        <result property="imgurl" column="imgurl"/>
+        <result property="isaccept" column="isaccept"/>
+        <result property="videourl" column="videourl"/>
+        <result property="goodcounts" column="goodcounts"/>
+        <result property="commitstatus" column="commitstatus"/>
+        <result property="kpstatus" column="kpstatus"/>
+    </resultMap>
+	<select id="queryanswerlist" parameterType="java.lang.String" resultType="map">
+		select * from answer where qid = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="queryObject" resultType="com.cf.entity.AnswerEntity">
+		select * from answer where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.AnswerEntity">
+		select * from answer
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from answer 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.AnswerEntity">
+		insert into answer
+		(
+			`id`, 
+			`qid`, 
+			`quid`, 
+			`auid`, 
+			`answer`, 
+			`createtime`, 
+			`imgurl`, 
+			`isaccept`, 
+			`videourl`, 
+			`goodcounts`, 
+			`commitstatus`, 
+			`kpstatus`
+		)
+		values
+		(
+			#{id}, 
+			#{qid}, 
+			#{quid}, 
+			#{auid}, 
+			#{answer}, 
+			#{createtime}, 
+			#{imgurl}, 
+			#{isaccept}, 
+			#{videourl}, 
+			#{goodcounts}, 
+			#{commitstatus}, 
+			#{kpstatus}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.AnswerEntity">
+		update answer 
+		<set>
+			<if test="qid != null">`qid` = #{qid}, </if>
+			<if test="quid != null">`quid` = #{quid}, </if>
+			<if test="auid != null">`auid` = #{auid}, </if>
+			<if test="answer != null">`answer` = #{answer}, </if>
+			<if test="createtime != null">`createtime` = #{createtime}, </if>
+			<if test="imgurl != null">`imgurl` = #{imgurl}, </if>
+			<if test="isaccept != null">`isaccept` = #{isaccept}, </if>
+			<if test="videourl != null">`videourl` = #{videourl}, </if>
+			<if test="goodcounts != null">`goodcounts` = #{goodcounts}, </if>
+			<if test="commitstatus != null">`commitstatus` = #{commitstatus}, </if>
+			<if test="kpstatus != null">`kpstatus` = #{kpstatus}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from answer where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from answer where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

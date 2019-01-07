@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>新闻公告</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.infotitle" @keyup.enter="query" placeholder="请输入关键词查询">
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			<a v-if="hasPermission('information:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('information:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('information:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			<a v-if="hasPermission('information:tuisong')" class="btn btn-primary" @click="tuisong"><i class="fa fa-superpowers"></i>&nbsp;推送通知栏</a>
+			<a v-if="hasPermission('information:tuisong')" class="btn btn-primary" @click="tuisongs"><i class="fa fa-circle-o-notch"></i>&nbsp;推送App内</a>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">新闻类型</div>
+			    <label class="radio-inline">
+				  <input type="radio" name="infotype" value="1" v-model="information.infotype"/> 新闻
+				</label>
+				<label class="radio-inline">
+				  <input type="radio" name="infotype" value="2" v-model="information.infotype"/> 公告
+				</label>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">新闻标题</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="information.infotitle" placeholder="新闻标题"/>
+			    </div>
+			</div>
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">发布时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="information.publishtime" placeholder="发布时间"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">图标</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="information.infoicon" placeholder="图标"/>
+			    </div>
+			</div> -->
+									 <div class="form-group">
+			   	<div class="col-sm-2 control-label">新闻摘要</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="information.infoprofile" placeholder="新闻摘要"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">内容</div>
+			   	<div class="col-sm-10">
+			     <!--  <input type="text" class="form-control" v-model="information.infodetail" placeholder="内容"/> -->
+			   	 <!--  <textarea class="layui-textarea" v-model="information.infodetail" placeholder="请输入内容信息">  描述</textarea>-->
+				  	<textarea id="TextArea1" name="TextArea1"   v-model="information.infodetail" cols="20" rows="2" class="ckeditor"></textarea>
+			    </div>
+			</div>
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">发布人</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="information.infopublisher" placeholder="发布人"/>
+			    </div>
+			</div> -->
+									<!-- <div class="form-group">
+			   	<div class="col-sm-2 control-label">状态</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="information.status" placeholder="状态"/>
+			    </div> 
+			</div>-->
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../public/js/sys/information.js"></script>
+<!-- ckeditor.js -->
+<script type="text/javascript" src="../public/plugins/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+	var contextRoot =/*[[@{/}]]*/ '';
+	var editor;
+	$(function(){
+		editor = CKEDITOR.replace("TextArea1");
+	})
+</script>
+</body>
+</html>

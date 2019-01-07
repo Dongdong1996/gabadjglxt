@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.MessageDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.MessageEntity" id="messageMap">
+        <result property="id" column="id"/>
+        <result property="entcode" column="entcode"/>
+        <result property="createtime" column="createtime"/>
+        <result property="messagetype" column="messagetype"/>
+        <result property="messagestatus" column="messagestatus"/>
+        <result property="content" column="content"/>
+        <result property="quid" column="quid"/>
+        <result property="auid" column="auid"/>
+        <result property="experienceid" column="experienceid"/>
+        <result property="aname" column="aname"/>
+        <result property="entname" column="entname"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.MessageEntity">
+		select * from message where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.MessageEntity">
+		select e.*,
+		(select a.entname from enterprise a where a.entcode = e.entcode) as 'entname'
+		 from message e
+		<where>
+			<if test="content != null and content.trim() != ''">
+				 e.messagetype = #{content}
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by e.createtime desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from message 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.MessageEntity">
+		<!-- 自动生成UUID -->
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        	select  replace(uuid(),'-','')   from dual
+    	</selectKey>
+		insert into message
+		(
+			`id`, 
+			`entcode`, 
+			`createtime`, 
+			`messagetype`, 
+			`messagestatus`, 
+			`content`, 
+			`quid`, 
+			`auid`, 
+			`experienceid`, 
+			`aname`
+		)
+		values
+		(
+			#{id}, 
+			#{entcode}, 
+			#{createtime}, 
+			#{messagetype}, 
+			#{messagestatus}, 
+			#{content}, 
+			#{quid}, 
+			#{auid}, 
+			#{experienceid}, 
+			#{aname}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.MessageEntity">
+		update message 
+		<set>
+			<if test="entcode != null">`entcode` = #{entcode}, </if>
+			<if test="createtime != null">`createtime` = #{createtime}, </if>
+			<if test="messagetype != null">`messagetype` = #{messagetype}, </if>
+			<if test="messagestatus != null">`messagestatus` = #{messagestatus}, </if>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="quid != null">`quid` = #{quid}, </if>
+			<if test="auid != null">`auid` = #{auid}, </if>
+			<if test="experienceid != null">`experienceid` = #{experienceid}, </if>
+			<if test="aname != null">`aname` = #{aname}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from message where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from message where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.MessagestatusDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.MessagestatusEntity" id="MessagestatusMap">
+        <result property="id" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="messid" column="messid"/>
+        <result property="messtype" column="messtype"/>
+        <result property="readstatus" column="readstatus"/>
+    </resultMap>
+
+	<insert id="insert">
+		INSERT INTO messagestatus(
+			uid,
+			messid,
+			messtype,
+			readstatus
+		)VALUES(
+			#{uid,jdbcType=VARCHAR},
+			#{messid,jdbcType=VARCHAR},
+			#{messtype,jdbcType=CHAR},
+			#{readstatus,jdbcType=CHAR}
+		)
+	</insert>
+
+</mapper>

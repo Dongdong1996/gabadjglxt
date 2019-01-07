@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.EnterpriseDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.EnterpriseEntity" id="enterpriseMap">
+        <result property="id" column="id"/>
+        <result property="entcode" column="entcode"/>
+        <result property="entname" column="entname"/>
+        <result property="entareacode" column="entareacode"/>
+        <result property="entareaname" column="entareaname"/>
+        <result property="contacts" column="contacts"/>
+        <result property="phone" column="phone"/>
+        <result property="licenseurl" column="licenseurl"/>
+        <result property="industry" column="industry"/>
+        <result property="scale" column="scale"/>
+        <result property="entsort" column="entsort"/>
+        <result property="wastewater" column="wastewater"/>
+        <result property="status" column="status"/>
+        <result property="num" column="num"/>
+    </resultMap>
+	<!-- 查询企业未认证状态数量 -->
+	<select id="queryEnterpriseForCount" resultType="java.lang.Integer">
+		SELECT COUNT(0) FROM enterprise
+		WHERE `status` = '0'
+		OR `status` = '1'
+	</select>
+	<select id="queryObject" resultType="com.cf.entity.EnterpriseEntity">
+		select * from enterprise where id = #{value}
+	</select>
+	<select id="queryEnterpriseList" resultType="com.cf.entity.EnterpriseEntity">
+		select * from enterprise
+	</select>
+	<select id="queryList" resultType="com.cf.entity.EnterpriseEntity">
+		select e.id as id,e.entcode as entcode,e.entname as entname,e.entareacode as entareacode,e.entareaname as entareaname,
+		e.licenseurl as licenseurl,e.industry as industry,e.scale as scale,e.entsort as entsort,
+		e.wastewater as wastewater,e.status as status,
+		r.realname as contacts,r.phone as phone,COUNT(DISTINCT e.entcode) as num
+		 from enterprise e left join entuser r on e.entcode = r.entcode AND r.utype = '12'
+
+		 GROUP BY e.entcode
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by e.id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from enterprise 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.EnterpriseEntity">
+		insert into enterprise
+		(
+			`id`, 
+			`entcode`, 
+			`entname`, 
+			`entareacode`, 
+			`entareaname`, 
+			`contacts`, 
+			`phone`, 
+			`licenseurl`, 
+			`industry`, 
+			`scale`, 
+			`entsort`, 
+			`wastewater`, 
+			`status`
+		)
+		values
+		(
+			#{id}, 
+			#{entcode}, 
+			#{entname}, 
+			#{entareacode}, 
+			#{entareaname}, 
+			#{contacts}, 
+			#{phone}, 
+			#{licenseurl}, 
+			#{industry}, 
+			#{scale}, 
+			#{entsort}, 
+			#{wastewater}, 
+			#{status}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.EnterpriseEntity">
+		update enterprise 
+		<set>
+			<if test="entcode != null">`entcode` = #{entcode}, </if>
+			<if test="entname != null">`entname` = #{entname}, </if>
+			<if test="entareacode != null">`entareacode` = #{entareacode}, </if>
+			<if test="entareaname != null">`entareaname` = #{entareaname}, </if>
+			<if test="contacts != null">`contacts` = #{contacts}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+<!-- 			<if test="licenseurl != null">`licenseurl` = #{licenseurl}, </if> -->
+			<if test="industry != null">`industry` = #{industry}, </if>
+			<if test="scale != null">`scale` = #{scale}, </if>
+			<if test="entsort != null">`entsort` = #{entsort}, </if>
+			<if test="wastewater != null">`wastewater` = #{wastewater}, </if>
+			<if test="status != null">`status` = #{status}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from enterprise where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from enterprise where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

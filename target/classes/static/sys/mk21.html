@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>模块二 常住人员户籍管理</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<a v-if="hasPermission('sys:mk21:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('sys:mk21:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('sys:mk21:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+		   <div class="form-group">
+			   	<div class="col-sm-2 control-label">身份证号</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.身份证号" placeholder=""/>
+			    </div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label">头像</div>
+				<div class="col-sm-10">
+			   	 <img src="../public/image/template.png" id="image" v-model="mk21.头像" onclick="file.click();" @dblclick="enlargeIsPic" style="width: 160px;height: 120px;line-height: 60px;background: #eee;margin: 10px 5px 0 0;font-size: 32px;text-align: center;color: #ccc;" />
+			     <input type="file" id="file" style="display:none;" multiple accept="image/*" @change="readAsDataURL"  placeholder=""/>
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">姓名</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.姓名" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">性别</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.性别" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">出生日期</div>
+			   	<div class="col-sm-10">
+			      <input type="text" id="csrq" class="form-control" v-model="mk21.出生日期" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">出生地</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.出生地" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">民族</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.民族" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">籍贯</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.籍贯" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">本市或县地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.本市或县地址" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">宗教信仰</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.宗教信仰" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">身高</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.身高" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">血型</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.血型" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">文化程度</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.文化程度" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">兵役状况</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.兵役状况" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">服务处所</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.服务处所" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">职业</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.职业" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">何时由何地迁来本市或县</div>
+			   	<div class="col-sm-10">
+			      <input type="text" id="qlrq" class="form-control" v-model="mk21.何时由何地迁来本市或县" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">何时由何地迁来本址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.何时由何地迁来本址" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">登记派出所</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mk21.登记派出所" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">登记日期</div>
+			   	<div class="col-sm-10">
+			      <input type="text" id="djrq" class="form-control" v-model="mk21.登记日期" placeholder=""/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../public/js/sys/mk21.js"></script>
+<script src="../public/plugins/laydate/laydate.js"></script>
+<script src="../public/plugins/layui/layui.js"></script>
+<script>
+//执行一个laydate实例
+laydate.render({
+  elem: '#csrq',
+  type: 'date'
+});
+laydate.render({
+  elem: '#qlrq',
+  type: 'date'
+});
+laydate.render({
+  elem: '#djrq',
+  type: 'date'
+});
+</script>
+</body>
+</html>

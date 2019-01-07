@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.KnowcategoryDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.KnowcategoryEntity" id="knowcategoryMap">
+        <result property="id" column="id"/>
+        <result property="kname" column="kname"/>
+        <result property="createtime" column="createtime"/>
+        <result property="fid" column="fid"/>
+        <result property="ksort" column="ksort"/>
+    </resultMap>
+
+	<!-- 获取类目树 -->
+	<select id="queryLeimuList" resultType="com.cf.entity.KnowcategoryEntity">
+		select * from knowcategory order by fid asc 
+	</select>
+	
+	<select id="queryObject" resultType="com.cf.entity.KnowcategoryEntity">
+		select * from knowcategory where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.KnowcategoryEntity">
+		select * from knowcategory where fid !=0
+		<!-- select a.id as id,a.fid as fid,a.kname as kname,b.kname as parentName,a.createtime ,a.ksort from knowcategory a,knowcategory b where (a.fid=b.id) order by a.fid asc,a.ksort asc; -->
+		<where>
+			<if test="kname != null and kname.trim() != ''">
+				and `a.kname` like concat('%',#{kname},'%') 
+			</if>
+		</where>
+       	<choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by fid asc,ksort asc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from knowcategory 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.KnowcategoryEntity">
+		insert into knowcategory
+		(
+			 
+			`kname`, 
+			`createtime`, 
+			`fid`, 
+			`ksort`
+		)
+		values
+		(
+			 
+			#{kname}, 
+			#{createtime}, 
+			#{fid}, 
+			#{ksort}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.KnowcategoryEntity">
+		update knowcategory 
+		<set>
+			<if test="kname != null">`kname` = #{kname}, </if>
+			<if test="createtime != null">`createtime` = #{createtime}, </if>
+			<if test="fid != null">`fid` = #{fid}, </if>
+			<if test="ksort != null">`ksort` = #{ksort}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from knowcategory where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from knowcategory where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.Mk21Dao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.Mk21Entity" id="mk21Map">
+        <result property="id" column="id"/>
+        <result property="身份证号" column="身份证号"/>
+        <result property="姓名" column="姓名"/>
+        <result property="性别" column="性别"/>
+        <result property="出生日期" column="出生日期"/>
+        <result property="出生地" column="出生地"/>
+        <result property="民族" column="民族"/>
+        <result property="籍贯" column="籍贯"/>
+        <result property="本市或县地址" column="本市或县地址"/>
+        <result property="宗教信仰" column="宗教信仰"/>
+        <result property="身高" column="身高"/>
+        <result property="血型" column="血型"/>
+        <result property="文化程度" column="文化程度"/>
+        <result property="兵役状况" column="兵役状况"/>
+        <result property="服务处所" column="服务处所"/>
+        <result property="职业" column="职业"/>
+        <result property="何时由何地迁来本市或县" column="何时由何地迁来本市或县"/>
+        <result property="何时由何地迁来本址" column="何时由何地迁来本址"/>
+        <result property="登记派出所" column="登记派出所"/>
+        <result property="登记日期" column="登记日期"/>
+        <result property="头像" column="头像"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.Mk21Entity">
+		select * from mk2_1 where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.Mk21Entity">
+		select * from mk2_1
+		<where>
+			<if test="姓名 != null and 姓名.trim() != ''">
+				and `姓名` like concat('%',#{姓名},'%') 
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from mk2_1 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.Mk21Entity" useGeneratedKeys="true" keyProperty="id">
+		insert into mk2_1
+		(
+			`身份证号`, 
+			`姓名`, 
+			`性别`, 
+			`出生日期`, 
+			`出生地`, 
+			`民族`, 
+			`籍贯`, 
+			`本市或县地址`, 
+			`宗教信仰`, 
+			`身高`, 
+			`血型`, 
+			`文化程度`, 
+			`兵役状况`, 
+			`服务处所`, 
+			`职业`, 
+			`何时由何地迁来本市或县`, 
+			`何时由何地迁来本址`, 
+			`登记派出所`, 
+			`登记日期`, 
+			`头像`
+		)
+		values
+		(
+			#{身份证号}, 
+			#{姓名}, 
+			#{性别}, 
+			#{出生日期}, 
+			#{出生地}, 
+			#{民族}, 
+			#{籍贯}, 
+			#{本市或县地址}, 
+			#{宗教信仰}, 
+			#{身高}, 
+			#{血型}, 
+			#{文化程度}, 
+			#{兵役状况}, 
+			#{服务处所}, 
+			#{职业}, 
+			#{何时由何地迁来本市或县}, 
+			#{何时由何地迁来本址}, 
+			#{登记派出所}, 
+			#{登记日期}, 
+			#{头像}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.Mk21Entity">
+		update mk2_1 
+		<set>
+			<if test="身份证号 != null">`身份证号` = #{身份证号}, </if>
+			<if test="姓名 != null">`姓名` = #{姓名}, </if>
+			<if test="性别 != null">`性别` = #{性别}, </if>
+			<if test="出生日期 != null">`出生日期` = #{出生日期}, </if>
+			<if test="出生地 != null">`出生地` = #{出生地}, </if>
+			<if test="民族 != null">`民族` = #{民族}, </if>
+			<if test="籍贯 != null">`籍贯` = #{籍贯}, </if>
+			<if test="本市或县地址 != null">`本市或县地址` = #{本市或县地址}, </if>
+			<if test="宗教信仰 != null">`宗教信仰` = #{宗教信仰}, </if>
+			<if test="身高 != null">`身高` = #{身高}, </if>
+			<if test="血型 != null">`血型` = #{血型}, </if>
+			<if test="文化程度 != null">`文化程度` = #{文化程度}, </if>
+			<if test="兵役状况 != null">`兵役状况` = #{兵役状况}, </if>
+			<if test="服务处所 != null">`服务处所` = #{服务处所}, </if>
+			<if test="职业 != null">`职业` = #{职业}, </if>
+			<if test="何时由何地迁来本市或县 != null">`何时由何地迁来本市或县` = #{何时由何地迁来本市或县}, </if>
+			<if test="何时由何地迁来本址 != null">`何时由何地迁来本址` = #{何时由何地迁来本址}, </if>
+			<if test="登记派出所 != null">`登记派出所` = #{登记派出所}, </if>
+			<if test="登记日期 != null">`登记日期` = #{登记日期}</if>
+			<if test="头像 != null">`头像` = #{头像}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from mk2_1 where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from mk2_1 where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

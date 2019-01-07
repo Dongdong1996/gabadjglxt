@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cf.dao.WorkorderDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.WorkorderEntity" id="workorderMap">
+        <result property="id" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="imgurl" column="imgurl"/>
+        <result property="videlurl" column="videlurl"/>
+        <result property="wostatus" column="wostatus"/>
+        <result property="commitstatus" column="commitstatus"/>
+        <result property="creattime" column="creattime"/>
+        <result property="fid" column="fid"/>
+        
+        <result property="contenta" column="contenta"/>
+    </resultMap>
+    <!-- 查询工单数量 -->
+    <select id="queryWorkorderForCount" resultType="java.lang.Integer">
+    	select COUNT(0) from workorder a LEFT JOIN workorderanswer b ON a.id=b.woid
+		where a.fid is null
+		and b.content is NULL 
+    </select>
+    <select id="queryObject" resultType="com.cf.entity.WorkorderEntity">
+<!-- 		select a.*,b.content AS "contenta" from workorder a,workorderanswer b where a.id=b.woid and a.id = #{value} -->
+		SELECT a.*,b.content as 'contenta' FROM workorder a LEFT JOIN workorderanswer b ON a.id=b.woid 
+					WHERE a.id = #{value}
+	</select>
+    <select id="queryWorkorderlist" resultType="com.cf.entity.WorkorderEntity">
+    	SELECT a.*,b.content as 'contenta' FROM workorder a LEFT JOIN workorderanswer b ON a.id=b.woid 
+					WHERE a.id = #{value}
+    </select>
+    <select id="queryWorkorderlists" resultType="com.cf.entity.WorkorderEntity">
+    	SELECT a.*,b.content as 'contenta' FROM workorder a LEFT JOIN workorderanswer b ON a.id=b.woid 
+					WHERE a.fid = #{value}
+					order by a.creattime asc
+    </select>
+    <select id="queryList" resultType="com.cf.entity.WorkorderEntity">
+		select a.*,b.content as 'contenta' from workorder a LEFT JOIN workorderanswer b ON a.id=b.woid
+		<where>
+			<if test="title != null and title.trim() != ''">
+				and a.`title` like concat('%',#{title},'%') 
+			</if>
+			and a.fid is null
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by a.creattime desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from workorder where fid is null
+	</select>
+    
+<!--     <insert id="save" parameterType="com.cf.entity.WorkorderEntity"> -->
+<!-- 		<selectKey keyProperty="id" resultType="String" order="BEFORE">   -->
+<!--         	select  replace(uuid(),'-','')   from dual -->
+<!--     	</selectKey> -->
+<!-- 		insert into workorderanswer -->
+<!-- 		( -->
+<!-- 			`id`, -->
+<!-- 			`woid`, -->
+<!-- 			`uid`,  -->
+<!-- 			`content`,  -->
+<!-- 			`creattime`,  -->
+<!-- 			`commitstatus`,  -->
+<!-- 		) -->
+<!-- 		values -->
+<!-- 		( -->
+<!-- 			#{id}, -->
+<!-- 			#{id}, -->
+<!-- 			'00',  -->
+<!-- 			#{contenta},  -->
+<!-- 			#{creattime},  -->
+<!-- 			'1' -->
+<!-- 		) -->
+<!-- 	</insert> -->
+    
+</mapper>

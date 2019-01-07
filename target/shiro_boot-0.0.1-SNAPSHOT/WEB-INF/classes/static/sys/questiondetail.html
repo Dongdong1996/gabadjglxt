@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>知识问答详情</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" >
+	<div v-show="showList" style="display:none;">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.title" @keyup.enter="query" placeholder="请输入关键词查询">
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			<a class="btn btn-primary" @click="lookforquestion"><i class="fa fa-bars"></i>&nbsp;查看</a>
+			<a v-if="hasPermission('question:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('question:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('question:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div class="panel panel-default">
+		<div class="panel-heading">知识问答详情</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">内容详情</div>
+			   	<div class="col-sm-10">
+			      <textarea id="description" style="height:100px;" class="form-control" placeholder="请输入内容信息"  disabled></textarea>	
+			    </div>
+			</div>
+			<div id="queryworkorder">
+				
+			</div>
+
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+<!-- 				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/> -->
+				<input type="button" class="btn btn-warning" onclick="reload();" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- <script src="../public/js/sys/question.js"></script> -->
+<script type="text/javascript">
+	$(function(){
+		//获取id
+		var thisURL = document.URL;  
+        var showval= thisURL.split("=")[1];
+        //查询此id的内容以及一下内容
+        queryQuestionlist(showval);
+	});
+	function queryQuestionlist(id){
+		$.ajax({
+			type:"post",
+			url:"../question/queryQuestionlist",
+			data:id,
+			dataType:"json",
+			contentType:'application/json;charset=utf-8',
+			success:function(res){
+				//alert(JSON.stringify(res));
+				if(res.code == 0){
+					$("#description").html(res.question.description);
+					var answerlist = res.answerlist;
+					var str = "";
+					for(var i=0;i<answerlist.length;i++){
+						str+='<div class="form-group">';
+					   	str+='<div class="col-sm-2 control-label">回答详情</div>';
+					   	str+='<div class="col-sm-10">';
+				        str+='<textarea id="answer" style="height:100px;" class="form-control" placeholder="请输入内容信息"  disabled>'+answerlist[i].answer+'</textarea>';	
+					    str+='</div>';
+						str+='</div>';
+					}
+					$("#queryworkorder").append(str);
+				}
+			}
+		});
+	}
+
+
+	function reload(){
+		location.href="question.html";
+	}
+</script>
+</body>
+</html>

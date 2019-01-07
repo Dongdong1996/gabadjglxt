@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.EntprocesslineDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.EntprocesslineEntity" id="entprocesslineMap">
+        <result property="id" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="entcode" column="entcode"/>
+        <result property="entname" column="entname"/>
+        <result property="plcode" column="plcode"/>
+        <result property="plname" column="plname"/>
+        <result property="nodecode" column="nodecode"/>
+        <result property="nodename" column="nodename"/>
+        <result property="nodesort" column="nodesort"/>
+        <result property="nodevisibled" column="nodevisibled"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.EntprocesslineEntity">
+		select * from entprocessline where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.EntprocesslineEntity">
+		select * from entprocessline
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="queryplcode" parameterType="java.lang.String" resultType="com.cf.entity.EntprocesslineEntity">
+		select DISTINCT plname, plcode 
+		from entprocessline 
+		where entcode = #{entcode}
+		order by plcode
+	</select>
+	<select id="querynodecode" parameterType="java.lang.String" resultType="com.cf.entity.EntprocesslineEntity">
+		select nodecode,nodename,nodesort 
+		from entprocessline
+		where plcode = #{plcode}
+		order by  nodesort
+	</select>
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from entprocessline 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.EntprocesslineEntity">
+		insert into entprocessline
+		(
+			`id`, 
+			`uid`, 
+			`entcode`, 
+			`entname`, 
+			`plcode`, 
+			`plname`, 
+			`nodecode`, 
+			`nodename`, 
+			`nodesort`, 
+			`nodevisibled`
+		)
+		values
+		(
+			#{id}, 
+			#{uid}, 
+			#{entcode}, 
+			#{entname}, 
+			#{plcode}, 
+			#{plname}, 
+			#{nodecode}, 
+			#{nodename}, 
+			#{nodesort}, 
+			#{nodevisibled}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.EntprocesslineEntity">
+		update entprocessline 
+		<set>
+			<if test="uid != null">`uid` = #{uid}, </if>
+			<if test="entcode != null">`entcode` = #{entcode}, </if>
+			<if test="entname != null">`entname` = #{entname}, </if>
+			<if test="plcode != null">`plcode` = #{plcode}, </if>
+			<if test="plname != null">`plname` = #{plname}, </if>
+			<if test="nodecode != null">`nodecode` = #{nodecode}, </if>
+			<if test="nodename != null">`nodename` = #{nodename}, </if>
+			<if test="nodesort != null">`nodesort` = #{nodesort}, </if>
+			<if test="nodevisibled != null">`nodevisibled` = #{nodevisibled}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from entprocessline where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from entprocessline where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

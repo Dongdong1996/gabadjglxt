@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.SysDictDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.SysDictEntity" id="sysDictMap">
+        <result property="id" column="id"/>
+        <result property="key" column="key"/>
+        <result property="value" column="value"/>
+        <result property="createtime" column="createtime"/>
+        <result property="notes" column="notes"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.SysDictEntity">
+		select * from sys_dict where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.SysDictEntity">
+		select * from sys_dict
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_dict 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.SysDictEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_dict
+		(
+			`key`, 
+			`value`, 
+			`createtime`, 
+			`notes`
+		)
+		values
+		(
+			#{key}, 
+			#{value}, 
+			#{createtime}, 
+			#{notes}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.SysDictEntity">
+		update sys_dict 
+		<set>
+			<if test="key != null">`key` = #{key}, </if>
+			<if test="value != null">`value` = #{value}, </if>
+			<if test="createtime != null">`createtime` = #{createtime}, </if>
+			<if test="notes != null">`notes` = #{notes}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from sys_dict where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_dict where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

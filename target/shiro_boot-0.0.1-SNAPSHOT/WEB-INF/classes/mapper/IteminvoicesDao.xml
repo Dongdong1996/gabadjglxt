@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cf.dao.IteminvoicesDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cf.entity.IteminvoicesEntity" id="iteminvoicesMap">
+        <result property="id" column="id"/>
+        <result property="entcode" column="entcode"/>
+        <result property="starttime" column="starttime"/>
+        <result property="endtime" column="endtime"/>
+        <result property="createtime" column="createtime"/>
+        <result property="itemcode" column="itemcode"/>
+        <result property="consumption" column="consumption"/>
+        <result property="invoices" column="invoices"/>
+        <result property="entname" column="entname"/>
+        <result property="itemname" column="itemname"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.cf.entity.IteminvoicesEntity">
+		select * from iteminvoices where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.cf.entity.IteminvoicesEntity">
+		select s.*,
+		(select e.entname from enterprise e where e.entcode = s.entcode) as "entname",
+		(select m.itemname from feeitem m where m.itemcode = s.itemcode) as "itemname"
+		from iteminvoices s
+		<where>
+			<if test="entcode != null and entcode.trim() != ''">
+				and s.`entcode`= #{entcode} 
+			</if>
+			<if test="starttime != null and starttime.trim() != ''">
+				and date_format(s.createtime,'%Y-%m-%d') &gt;= STR_TO_DATE(#{starttime},'%Y-%m-%d')
+			</if>
+			<if test="endtime != null and endtime.trim() != ''">
+				and date_format(s.createtime,'%Y-%m-%d') &lt;= STR_TO_DATE(#{endtime},'%Y-%m-%d')
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by createtime desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from iteminvoices 
+	</select>
+	 
+	<insert id="save" parameterType="com.cf.entity.IteminvoicesEntity">
+		insert into iteminvoices
+		(
+			`id`, 
+			`entcode`, 
+			`starttime`, 
+			`endtime`, 
+			`createtime`, 
+			`itemcode`, 
+			`consumption`, 
+			`invoices`
+		)
+		values
+		(
+			#{id}, 
+			#{entcode}, 
+			#{starttime}, 
+			#{endtime}, 
+			#{createtime}, 
+			#{itemcode}, 
+			#{consumption}, 
+			#{invoices}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.cf.entity.IteminvoicesEntity">
+		update iteminvoices 
+		<set>
+			<if test="entcode != null">`entcode` = #{entcode}, </if>
+			<if test="starttime != null">`starttime` = #{starttime}, </if>
+			<if test="endtime != null">`endtime` = #{endtime}, </if>
+			<if test="createtime != null">`createtime` = #{createtime}, </if>
+			<if test="itemcode != null">`itemcode` = #{itemcode}, </if>
+			<if test="consumption != null">`consumption` = #{consumption}, </if>
+			<if test="invoices != null">`invoices` = #{invoices}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from iteminvoices where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from iteminvoices where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>
